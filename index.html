@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IPTV Subscription Portal</title>
+<style>
+  body {
+    margin: 0; font-family: sans-serif; background: #fefefe; color: #333;
+  }
+  header {
+    background: #d8006e; color: white; padding: 1rem; text-align: center; font-size: 1.5rem;
+    position: relative;
+  }
+  .menu {
+    position: absolute; top: 10px; right: 10px;
+  }
+  .menu select {
+    border-radius: 5px; padding: 5px;
+  }
+  #plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 1rem; padding: 1rem;
+  }
+  .plan {
+    border: 2px solid #d8006e; padding: 1rem; border-radius: 10px; background: white; text-align: center;
+  }
+  .discount {
+    color: green; font-weight: bold; margin: 5px 0;
+  }
+  .plan button {
+    background: #d8006e; border: none; color: white; padding: 10px; border-radius: 5px; cursor: pointer;
+  }
+  .footer {
+    text-align: center; padding: 1rem; font-size: 0.9rem; background: #f3f3f3; margin-top: 2rem;
+  }
+  /* Payment Popup */
+  #paymentPopup {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,182,193,0.5);
+    display: none; justify-content: center; align-items: center; z-index: 9999;
+  }
+  .popup-content {
+    background: #fff; border-radius: 15px; width: 90%; max-width: 400px;
+    padding: 25px 30px; box-shadow: 0 4px 20px rgba(255,105,180,0.4);
+    border: 2px solid #ff85a2; text-align: center;
+  }
+  .popup-content h2 {
+    color: #d81b60; margin-bottom: 15px; font-weight: 700;
+  }
+  .popup-content p {
+    color: #444; margin-bottom: 15px; font-size: 1.1rem;
+  }
+  .copy-btn {
+    background: #ff85a2; border: none; color: white; padding: 6px 12px;
+    border-radius: 6px; cursor: pointer; font-weight: 600; margin-left: 8px;
+    transition: background 0.3s ease;
+  }
+  .copy-btn:hover {
+    background: #d81b60;
+  }
+  input[type=text] {
+    width: 100%; padding: 12px 15px; margin-bottom: 15px;
+    border: 2px solid #ffb3c6; border-radius: 8px; font-size: 1rem;
+    outline-color: #ff85a2;
+  }
+  button.confirm-btn {
+    background: #d81b60; border: none; color: white;
+    padding: 12px 0; width: 100%; border-radius: 8px;
+    font-size: 1.2rem; cursor: pointer; font-weight: 700;
+    transition: background 0.3s ease;
+  }
+  button.confirm-btn:hover {
+    background: #a31542;
+  }
+  button.cancel-btn {
+    margin-top: 12px; background: transparent; border: none;
+    color: #d81b60; font-weight: 600; cursor: pointer;
+  }
+  button.cancel-btn:hover {
+    text-decoration: underline;
+  }
+  /* Login Form */
+  #loginSection {
+    display: none; padding: 2rem; max-width: 400px; margin: 1rem auto;
+    border: 2px solid #d8006e; border-radius: 10px; background: #fff;
+  }
+  #loginSection h2 {
+    text-align: center; color: #d8006e; margin-bottom: 1rem;
+  }
+  #loginSection input[type=text], #loginSection input[type=password] {
+    width: 100%; padding: 12px 15px; margin: 8px 0;
+    border: 2px solid #d8006e; border-radius: 8px; font-size: 1rem;
+  }
+  #loginSection button {
+    background: #d8006e; border: none; color: white; padding: 12px;
+    border-radius: 8px; width: 100%; font-size: 1.1rem; cursor: pointer;
+    margin-top: 10px;
+  }
+  #loginSection button:hover {
+    background: #a3005a;
+  }
+  /* IPTV iframe container */
+  #iptvFrameContainer {
+    display: none;
+    margin: 1rem auto;
+    max-width: 100vw;
+    height: 80vh;
+  }
+  #iptvFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 10px;
+  }
+  /* Logout button */
+  #logoutBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #d8006e;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    display: none;
+  }
+  #logoutBtn:hover {
+    background: #a3005a;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  IPTV Subscription Portal
+  <button id="logoutBtn" onclick="logoutUser()">Logout</button>
+</header>
+
+<div class="menu">
+  <select onchange="if(this.value){ window.open(this.value,'_blank'); }">
+    <option value="">☰ Menu</option>
+    <option disabled>Version: v3.4.2</option>
+    <option value="https://wa.me/8801737949691">Support on WhatsApp</option>
+  </select>
+</div>
+
+<section id="plans"></section>
+
+<section id="loginSection">
+  <h2>Already Have an Account?</h2>
+  <input type="text" id="loginUser" placeholder="Username" />
+  <input type="password" id="loginPass" placeholder="Password" />
+  <button onclick="loginUser()">Login</button>
+  <p id="loginMsg" style="color:red; text-align:center;"></p>
+</section>
+
+<div id="iptvFrameContainer">
+  <iframe id="iptvFrame" src="" allowfullscreen></iframe>
+</div>
+
+<div class="footer">©Copyright Reserved by Iptvidn 2025</div>
+
+<!-- Payment Popup -->
+<div id="paymentPopup">
+  <div class="popup-content">
+    <h2>🔐 Payment Confirmation</h2>
+    <p>Send <strong>৳<span id="payAmount">200</span></strong> to <strong id="payNumber">01737949691</strong>
+      <button class="copy-btn" onclick="copyNumber()">Copy</button>
+    </p>
+    <input type="text" id="userPhone" placeholder="Your Mobile Number" />
+    <input type="text" id="trxId" placeholder="Transaction ID" />
+    <button class="confirm-btn" onclick="confirmPayment()">Confirm Payment</button>
+    <button class="cancel-btn" onclick="closePaymentPopup()">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const plans = [
+    { name: 'Basic Pack', price: 100 },
+    { name: 'Standard Pack', price: 200 },
+    { name: 'Premium Pack', price: 300 },
+    { name: 'VIP Pack', price: 500 },
+    { name: 'Sports & News', price: 250 },
+    { name: 'Full Access', price: 700 }
+  ];
+
+  const discountWindow = () => {
+    const now = new Date();
+    const hour = now.getHours();
+    return hour >= 10 && hour <= 13;
+  };
+
+  const getDiscount = (price) => {
+    const discounts = [10, 20, 40, 50];
+    const percent = discounts[Math.floor(Math.random() * discounts.length)];
+    const newPrice = price - (price * percent / 100);
+    return { percent, newPrice: Math.round(newPrice) };
+  };
+
+  const container = document.getElementById('plans');
+  plans.forEach(plan => {
+    let finalPrice = plan.price;
+    let discountText = '';
+    if(discountWindow()){
+      const { percent, newPrice } = getDiscount(plan.price);
+      finalPrice = newPrice;
+      discountText = `<div class='discount'>🔥 ${percent}% OFF! Now ৳${newPrice}</div>`;
+    }
+    container.innerHTML += `
+      <div class="plan">
+        <h3>${plan.name}</h3>
+        <p>Regular Price: ৳${plan.price}</p>
+        ${discountText}
+        <button onclick="buyPlan('${plan.name}', ${finalPrice})">Buy Now</button>
+      </div>
+    `;
+  });
+
+  const USERS_KEY = 'iptv_users';
+  const CURRENT_USER_KEY = 'iptv_current_user';
+
+  function generateRandomString(length = 6){
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for(let i=0; i<length; i++){
+      result += chars.charAt(Math.floor(Math.random()*chars.length));
+    }
+    return result;
+  }
+
+  function buyPlan(name, price){
+    window.selectedPlan = name;
+    window.selectedPrice = price;
+    document.getElementById('payAmount').innerText = price;
+    openPaymentPopup();
+  }
+
+  function openPaymentPopup(){
+    document.getElementById('paymentPopup').style.display = 'flex';
+  }
+  function closePaymentPopup(){
+    document.getElementById('paymentPopup').style.display = 'none';
+    document.getElementById('userPhone').value = '';
+    document.getElementById('trxId').value = '';
+  }
+  function copyNumber(){
+    const num = document.getElementById('payNumber').innerText;
+    navigator.clipboard.writeText(num).then(() => alert('Number copied: ' + num));
+  }
+
+  async function confirmPayment(){
+    const phone = document.getElementById('userPhone').value.trim();
+    const trx = document.getElementById('trxId').value.trim();
+    if(!phone || !trx){
+      alert('Please enter your mobile number and transaction ID.');
+      return;
+    }
+    const username = 'user' + generateRandomString(4);
+    const password = generateRandomString(6);
+    let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    users.push({ username, password, phone, plan: window.selectedPlan, trx });
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ username, plan: window.selectedPlan }));
+    alert(`Payment confirmed!\nUsername: ${username}\nPassword: ${password}`);
+    closePaymentPopup();
+    showLoggedIn(username);
+    sendToTelegram({ username, password, phone, plan: window.selectedPlan, trx });
+    loadIPTVIframe();
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('plans').style.display = 'none';
+    showLogoutButton(true);
+  }
+
+  async function sendToTelegram(data){
+    const token = '7860805250:AAE-2L8FrKqMH877IR0HzDRnLQterPXm-yg';
+    const chatId = '6139548883';
+    const message =
+      `New Subscription:\n` +
+      `Username: ${data.username}\n` +
+      `Password: ${data.password}\n` +
+      `Phone: ${data.phone}\n` +
+      `Package: ${data.plan}\n` +
+      `TRX ID: ${data.trx}`;
+    const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+    try {
+      await fetch(url);
+    } catch(e){
+      console.warn('Telegram message failed', e);
+    }
+  }
+
+  function loginUser(){
+    const userInput = document.getElementById('loginUser').value.trim();
+    const passInput = document.getElementById('loginPass').value.trim();
+    const loginMsg = document.getElementById('loginMsg');
+    let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    const found = users.find(u => u.username === userInput && u.password === passInput);
+    if(found){
+      alert('Login successful!');
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ username: found.username, plan: found.plan }));
+      showLoggedIn(found.username);
+      loadIPTVIframe();
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('plans').style.display = 'none';
+      loginMsg.innerText = '';
+      showLogoutButton(true);
+    } else {
+      loginMsg.innerText = 'Invalid username or password.';
+    }
+  }
+
+  function checkLoginStatus(){
+    const currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+    if(currentUser && currentUser.username){
+      showLoggedIn(currentUser.username);
+      loadIPTVIframe();
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('plans').style.display = 'none';
+      showLogoutButton(true);
+    } else {
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('plans').style.display = 'block';
+      document.getElementById('iptvFrameContainer').style.display = 'none';
+      showLogoutButton(false);
+    }
+  }
+
+  function showLoggedIn(username){
+    // এখানে ইউজারের জন্য কোনো মেসেজ বা UI দিতে পারেন (ঐচ্ছিক)
+  }
+
+  function loadIPTVIframe(){
+    document.getElementById('iptvFrame').src = 'http://iptvidn.com/';
+    document.getElementById('iptvFrameContainer').style.display = 'block';
+  }
+
+  // Logout functionality
+  function logoutUser(){
+    if(confirm('Do you want to logout?')){
+      localStorage.removeItem(CURRENT_USER_KEY);
+      // Reload page or reset UI
+      location.reload();
+    }
+  }
+
+  function showLogoutButton(show){
+    document.getElementById('logoutBtn').style.display = show ? 'block' : 'none';
+  }
+
+  // Initialization
+  checkLoginStatus();
+</script>
+
+</body>
+</html>
