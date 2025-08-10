@@ -1,359 +1,425 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>IPTV Subscription Portal</title>
-<style>
-  body {
-    margin: 0; font-family: sans-serif; background: #fefefe; color: #333;
-  }
-  header {
-    background: #d8006e; color: white; padding: 1rem; text-align: center; font-size: 1.5rem;
-    position: relative;
-  }
-  .menu {
-    position: absolute; top: 10px; right: 10px;
-  }
-  .menu select {
-    border-radius: 5px; padding: 5px;
-  }
-  #plans {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-    gap: 1rem; padding: 1rem;
-  }
-  .plan {
-    border: 2px solid #d8006e; padding: 1rem; border-radius: 10px; background: white; text-align: center;
-  }
-  .discount {
-    color: green; font-weight: bold; margin: 5px 0;
-  }
-  .plan button {
-    background: #d8006e; border: none; color: white; padding: 10px; border-radius: 5px; cursor: pointer;
-  }
-  .footer {
-    text-align: center; padding: 1rem; font-size: 0.9rem; background: #f3f3f3; margin-top: 2rem;
-  }
-  /* Payment Popup */
-  #paymentPopup {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255,182,193,0.5);
-    display: none; justify-content: center; align-items: center; z-index: 9999;
-  }
-  .popup-content {
-    background: #fff; border-radius: 15px; width: 90%; max-width: 400px;
-    padding: 25px 30px; box-shadow: 0 4px 20px rgba(255,105,180,0.4);
-    border: 2px solid #ff85a2; text-align: center;
-  }
-  .popup-content h2 {
-    color: #d81b60; margin-bottom: 15px; font-weight: 700;
-  }
-  .popup-content p {
-    color: #444; margin-bottom: 15px; font-size: 1.1rem;
-  }
-  .copy-btn {
-    background: #ff85a2; border: none; color: white; padding: 6px 12px;
-    border-radius: 6px; cursor: pointer; font-weight: 600; margin-left: 8px;
-    transition: background 0.3s ease;
-  }
-  .copy-btn:hover {
-    background: #d81b60;
-  }
-  input[type=text] {
-    width: 100%; padding: 12px 15px; margin-bottom: 15px;
-    border: 2px solid #ffb3c6; border-radius: 8px; font-size: 1rem;
-    outline-color: #ff85a2;
-  }
-  button.confirm-btn {
-    background: #d81b60; border: none; color: white;
-    padding: 12px 0; width: 100%; border-radius: 8px;
-    font-size: 1.2rem; cursor: pointer; font-weight: 700;
-    transition: background 0.3s ease;
-  }
-  button.confirm-btn:hover {
-    background: #a31542;
-  }
-  button.cancel-btn {
-    margin-top: 12px; background: transparent; border: none;
-    color: #d81b60; font-weight: 600; cursor: pointer;
-  }
-  button.cancel-btn:hover {
-    text-decoration: underline;
-  }
-  /* Login Form */
-  #loginSection {
-    display: none; padding: 2rem; max-width: 400px; margin: 1rem auto;
-    border: 2px solid #d8006e; border-radius: 10px; background: #fff;
-  }
-  #loginSection h2 {
-    text-align: center; color: #d8006e; margin-bottom: 1rem;
-  }
-  #loginSection input[type=text], #loginSection input[type=password] {
-    width: 100%; padding: 12px 15px; margin: 8px 0;
-    border: 2px solid #d8006e; border-radius: 8px; font-size: 1rem;
-  }
-  #loginSection button {
-    background: #d8006e; border: none; color: white; padding: 12px;
-    border-radius: 8px; width: 100%; font-size: 1.1rem; cursor: pointer;
-    margin-top: 10px;
-  }
-  #loginSection button:hover {
-    background: #a3005a;
-  }
-  /* IPTV iframe container */
-  #iptvFrameContainer {
-    display: none;
-    margin: 1rem auto;
-    max-width: 100vw;
-    height: 80vh;
-  }
-  #iptvFrame {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 10px;
-  }
-  /* Logout button */
-  #logoutBtn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: #d8006e;
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 700;
-    display: none;
-  }
-  #logoutBtn:hover {
-    background: #a3005a;
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MULTI APK PRO — APK Downloader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #05060a;
+      --panel: #0b0d12;
+      --neon: #00ff6a;
+      --muted: #9aa1a6;
+      --glass: rgba(255, 255, 255, 0.03);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: #e6f7ef;
+      font-family: 'Poppins', sans-serif;
+    }
+    .login-page {
+      display: grid;
+      place-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #021024, #031a33);
+    }
+    .login-box {
+      background: var(--panel);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 255, 106, 0.3);
+      border: 1px solid rgba(0, 255, 106, 0.15);
+      max-width: 320px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+    }
+    .login-box h2 {
+      color: var(--neon);
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      background: var(--glass);
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 10px;
+      background: var(--neon);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #000;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    .login-box button:hover {
+      background: #00e55f;
+    }
+
+    /* টাইপিং এনিমেশন বাটন */
+    .typing-btn-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .typing-btn {
+      display: inline-block;
+      font-weight: 700;
+      color: var(--neon);
+      border: 2px solid var(--neon);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      animation: typing 3s steps(20) forwards, blinkCaret 0.75s step-end infinite;
+      user-select: none;
+      text-decoration: none;
+    }
+    /* টাইপিং অ্যানিমেশন */
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 190px; }
+    }
+    @keyframes blinkCaret {
+      50% { border-color: transparent; }
+      100% { border-color: var(--neon); }
+    }
+
+    .app {
+      max-width: 980px;
+      margin: 28px auto;
+      padding: 20px;
+      display: none;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo .mark {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00140b, #00331a);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 18px rgba(0, 255, 106, 0.3);
+    }
+    .logo .mark span {
+      font-weight: 800;
+      color: var(--neon);
+      font-size: 1.4rem;
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .card-list {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--panel);
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(0, 255, 106, 0.15);
+      box-shadow: 0 0 12px rgba(0, 255, 106, 0.08);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px rgba(0, 255, 106, 0.2);
+    }
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-weight: 600;
+      color: var(--neon);
+    }
+    .card .meta {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .card .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 12px;
+      background: var(--neon);
+      color: #000;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: none;
+    }
+    .btn:hover {
+      background: #00e55f;
+    }
+    footer {
+      margin-top: 32px;
+      padding: 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+    }
+    .popup-content {
+      background: var(--panel);
+      padding: 24px;
+      border-radius: 14px;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+      border: 1px solid rgba(0, 255, 106, 0.2);
+      box-shadow: 0 0 20px rgba(0, 255, 106, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+      position: relative;
+    }
+    .popup h2 {
+      margin: 0 0 10px;
+      color: var(--neon);
+    }
+    .popup p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .count {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--neon);
+    }
+    /* Loading bar container */
+    .loader-container {
+      position: relative;
+      width: 100%;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 255, 106, 0.15);
+    }
+    /* Loading bar fill */
+    .loader-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff6a, #00cc5a);
+      width: 100%;
+      transform-origin: left;
+      animation: loadAnim 6s linear forwards;
+      filter: drop-shadow(0 0 6px #00ff6a);
+    }
+    /* Animate shrinking width from 100% to 0 */
+    @keyframes loadAnim {
+      from {
+        width: 100%;
+      }
+      to {
+        width: 0;
+      }
+    }
+    /* Countdown number centered inside loader */
+    .loader-count {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--bg);
+      font-weight: 800;
+      font-size: 1.1rem;
+      line-height: 20px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Close button style */
+    #popupCloseBtn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      font-size: 1.6rem;
+      color: var(--neon);
+      cursor: pointer;
+      user-select: none;
+    }
+    #popupCloseBtn:hover {
+      color: #00e55f;
+    }
+  </style>
 </head>
 <body>
+  <div class="login-page" id="loginPage">
+    <div class="login-box">
+      <h2>Login</h2>
+      <input type="password" id="password" placeholder="Enter Access Code" />
+      <button onclick="checkLogin()">Enter</button>
 
-<header>
-  IPTV Subscription Portal
-  <button id="logoutBtn" onclick="logoutUser()">Logout</button>
-</header>
-
-<div class="menu">
-  <select onchange="if(this.value){ window.open(this.value,'_blank'); }">
-    <option value="">☰ Menu</option>
-    <option disabled>Version: v3.4.2</option>
-    <option value="https://wa.me/8801737949691">Support on WhatsApp</option>
-  </select>
-</div>
-
-<section id="plans"></section>
-
-<section id="loginSection">
-  <h2>Already Have an Account?</h2>
-  <input type="text" id="loginUser" placeholder="Username" />
-  <input type="password" id="loginPass" placeholder="Password" />
-  <button onclick="loginUser()">Login</button>
-  <p id="loginMsg" style="color:red; text-align:center;"></p>
-</section>
-
-<div id="iptvFrameContainer">
-  <iframe id="iptvFrame" src="" allowfullscreen></iframe>
-</div>
-
-<div class="footer">©Copyright Reserved by Iptvidn 2025</div>
-
-<!-- Payment Popup -->
-<div id="paymentPopup">
-  <div class="popup-content">
-    <h2>🔐 Payment Confirmation</h2>
-    <p>Send <strong>৳<span id="payAmount">200</span></strong> to <strong id="payNumber">01737949691</strong>
-      <button class="copy-btn" onclick="copyNumber()">Copy</button>
-    </p>
-    <input type="text" id="userPhone" placeholder="Your Mobile Number" />
-    <input type="text" id="trxId" placeholder="Transaction ID" />
-    <button class="confirm-btn" onclick="confirmPayment()">Confirm Payment</button>
-    <button class="cancel-btn" onclick="closePaymentPopup()">Cancel</button>
+      <div class="typing-btn-container">
+        <a href="https://tiktok.com/@ariyaan321" target="_blank" rel="noopener" class="typing-btn">Visit Our TikTok</a>
+      </div>
+    </div>
   </div>
-</div>
+
+  <div class="app" id="appRoot">
+    <header>
+      <div class="logo">
+        <div class="mark"><span>M</span></div>
+        <div>
+          <h1>MULTI APK PRO By Hasan </h1>
+          <div class="meta">CREATOR DEXPRO TEAM HASAN</div>
+        </div>
+      </div>
+    </header>
+    <section id="apps" class="card-list"></section>
+    <footer>Copyright Claim By MMP 2025 All Rights Reserved.</footer>
+  </div>
+
+  <div class="popup" id="downloadPopup">
+    <div class="popup-content">
+      <button id="popupCloseBtn" aria-label="Close popup">×</button>
+      <h2 id="popupAppName"></h2>
+      <p id="popupAppSize"></p>
+      <div class="count">DOWNLOAD START IN</div>
+
+      <div class="loader-container">
+        <div class="loader-fill" id="loaderFill"></div>
+        <div class="loader-count" id="popupCountdown">6</div>
+      </div>
+
+      <button id="popupDownloadBtn" class="btn" style="display:none"></button>
+    </div>
+  </div>
 
 <script>
-  const plans = [
-    { name: 'Basic Pack', price: 100 },
-    { name: 'Standard Pack', price: 200 },
-    { name: 'Premium Pack', price: 300 },
-    { name: 'VIP Pack', price: 500 },
-    { name: 'Sports & News', price: 250 },
-    { name: 'Full Access', price: 700 }
+  const apps = [
+    {name:'Minecraft',version:'v1.21.100',size:'296.8 MB',link:'https://modscraft.net/en/downloads/16443'},
+    {name:'CapCut Pro',version:'v7.9.0',size:'95 MB',link:'https://capcutmodapk.id/files/CapCut%20Pro%20latest%20version%20download.আপক'},
+    {name:'InShot Pro',version:'v2.9',size:'85 MB',link:'#'},
+    {name:'PicsArt Pro',version:'v20.5',size:'120 MB',link:'#'}
   ];
 
-  const discountWindow = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    return hour >= 10 && hour <= 13;
-  };
+  function renderApps(list) {
+    const el = document.getElementById('apps');
+    el.innerHTML = '';
+    list.forEach(app => {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3>${app.name}</h3>
+        <div class="meta">${app.version} • ${app.size}</div>
+        <div class="row">
+          <div class="meta">Direct APK</div>
+          <div><button class="btn">Download</button></div>
+        </div>
+      `;
+      card.querySelector('.btn').addEventListener('click', () => showDownloadPopup(app));
+      el.appendChild(card);
+    });
+  }
 
-  const getDiscount = (price) => {
-    const discounts = [10, 20, 40, 50];
-    const percent = discounts[Math.floor(Math.random() * discounts.length)];
-    const newPrice = price - (price * percent / 100);
-    return { percent, newPrice: Math.round(newPrice) };
-  };
+  function showDownloadPopup(app) {
+    const popup = document.getElementById('downloadPopup');
+    const appName = document.getElementById('popupAppName');
+    const appSize = document.getElementById('popupAppSize');
+    const countdownEl = document.getElementById('popupCountdown');
+    const downloadBtn = document.getElementById('popupDownloadBtn');
+    const loaderFill = document.getElementById('loaderFill');
 
-  const container = document.getElementById('plans');
-  plans.forEach(plan => {
-    let finalPrice = plan.price;
-    let discountText = '';
-    if(discountWindow()){
-      const { percent, newPrice } = getDiscount(plan.price);
-      finalPrice = newPrice;
-      discountText = `<div class='discount'>🔥 ${percent}% OFF! Now ৳${newPrice}</div>`;
+    appName.textContent = app.name;
+    appSize.textContent = `Size: ${app.size}`;
+    countdownEl.textContent = '6';
+    downloadBtn.style.display = 'none';
+    downloadBtn.textContent = '';
+    popup.style.display = 'flex';
+
+    // Reset loader animation
+    loaderFill.style.animation = 'none';
+    loaderFill.offsetHeight; // trigger reflow
+    loaderFill.style.animation = 'loadAnim 6s linear forwards';
+
+    let timeLeft = 6;
+    if(window.downloadTimer) clearInterval(window.downloadTimer);
+    window.downloadTimer = setInterval(() => {
+      timeLeft--;
+      countdownEl.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(window.downloadTimer);
+        window.downloadTimer = null;
+        downloadBtn.style.display = 'inline-block';
+        downloadBtn.textContent = `Download (${app.size})`;
+        downloadBtn.onclick = () => {
+          window.open(app.link, '_blank');
+          popup.style.display = 'none';
+        };
+      }
+    }, 1000);
+  }
+
+  // Close button event
+  document.getElementById('popupCloseBtn').addEventListener('click', () => {
+    const popup = document.getElementById('downloadPopup');
+    popup.style.display = 'none';
+    if (window.downloadTimer) {
+      clearInterval(window.downloadTimer);
+      window.downloadTimer = null;
     }
-    container.innerHTML += `
-      <div class="plan">
-        <h3>${plan.name}</h3>
-        <p>Regular Price: ৳${plan.price}</p>
-        ${discountText}
-        <button onclick="buyPlan('${plan.name}', ${finalPrice})">Buy Now</button>
-      </div>
-    `;
   });
 
-  const USERS_KEY = 'iptv_users';
-  const CURRENT_USER_KEY = 'iptv_current_user';
-
-  function generateRandomString(length = 6){
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for(let i=0; i<length; i++){
-      result += chars.charAt(Math.floor(Math.random()*chars.length));
-    }
-    return result;
-  }
-
-  function buyPlan(name, price){
-    window.selectedPlan = name;
-    window.selectedPrice = price;
-    document.getElementById('payAmount').innerText = price;
-    openPaymentPopup();
-  }
-
-  function openPaymentPopup(){
-    document.getElementById('paymentPopup').style.display = 'flex';
-  }
-  function closePaymentPopup(){
-    document.getElementById('paymentPopup').style.display = 'none';
-    document.getElementById('userPhone').value = '';
-    document.getElementById('trxId').value = '';
-  }
-  function copyNumber(){
-    const num = document.getElementById('payNumber').innerText;
-    navigator.clipboard.writeText(num).then(() => alert('Number copied: ' + num));
-  }
-
-  async function confirmPayment(){
-    const phone = document.getElementById('userPhone').value.trim();
-    const trx = document.getElementById('trxId').value.trim();
-    if(!phone || !trx){
-      alert('Please enter your mobile number and transaction ID.');
-      return;
-    }
-    const username = 'user' + generateRandomString(4);
-    const password = generateRandomString(6);
-    let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-    users.push({ username, password, phone, plan: window.selectedPlan, trx });
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ username, plan: window.selectedPlan }));
-    alert(`Payment confirmed!\nUsername: ${username}\nPassword: ${password}`);
-    closePaymentPopup();
-    showLoggedIn(username);
-    sendToTelegram({ username, password, phone, plan: window.selectedPlan, trx });
-    loadIPTVIframe();
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('plans').style.display = 'none';
-    showLogoutButton(true);
-  }
-
-  async function sendToTelegram(data){
-    const token = '7860805250:AAE-2L8FrKqMH877IR0HzDRnLQterPXm-yg';
-    const chatId = '6139548883';
-    const message =
-      `New Subscription:\n` +
-      `Username: ${data.username}\n` +
-      `Password: ${data.password}\n` +
-      `Phone: ${data.phone}\n` +
-      `Package: ${data.plan}\n` +
-      `TRX ID: ${data.trx}`;
-    const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    try {
-      await fetch(url);
-    } catch(e){
-      console.warn('Telegram message failed', e);
-    }
-  }
-
-  function loginUser(){
-    const userInput = document.getElementById('loginUser').value.trim();
-    const passInput = document.getElementById('loginPass').value.trim();
-    const loginMsg = document.getElementById('loginMsg');
-    let users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-    const found = users.find(u => u.username === userInput && u.password === passInput);
-    if(found){
-      alert('Login successful!');
-      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify({ username: found.username, plan: found.plan }));
-      showLoggedIn(found.username);
-      loadIPTVIframe();
-      document.getElementById('loginSection').style.display = 'none';
-      document.getElementById('plans').style.display = 'none';
-      loginMsg.innerText = '';
-      showLogoutButton(true);
+  function checkLogin() {
+    const pass = document.getElementById('password').value.trim();
+    if (pass === 'HK123') {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('appRoot').style.display = 'block';
+      renderApps(apps);
     } else {
-      loginMsg.innerText = 'Invalid username or password.';
+      window.location.href = 'https://youtube.com/@allrounder-20k?si=_9QVa8Q4KKUUACUd';
     }
   }
-
-  function checkLoginStatus(){
-    const currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-    if(currentUser && currentUser.username){
-      showLoggedIn(currentUser.username);
-      loadIPTVIframe();
-      document.getElementById('loginSection').style.display = 'none';
-      document.getElementById('plans').style.display = 'none';
-      showLogoutButton(true);
-    } else {
-      document.getElementById('loginSection').style.display = 'block';
-      document.getElementById('plans').style.display = 'block';
-      document.getElementById('iptvFrameContainer').style.display = 'none';
-      showLogoutButton(false);
-    }
-  }
-
-  function showLoggedIn(username){
-    // এখানে ইউজারের জন্য কোনো মেসেজ বা UI দিতে পারেন (ঐচ্ছিক)
-  }
-
-  function loadIPTVIframe(){
-    document.getElementById('iptvFrame').src = 'http://iptvidn.com/';
-    document.getElementById('iptvFrameContainer').style.display = 'block';
-  }
-
-  // Logout functionality
-  function logoutUser(){
-    if(confirm('Do you want to logout?')){
-      localStorage.removeItem(CURRENT_USER_KEY);
-      // Reload page or reset UI
-      location.reload();
-    }
-  }
-
-  function showLogoutButton(show){
-    document.getElementById('logoutBtn').style.display = show ? 'block' : 'none';
-  }
-
-  // Initialization
-  checkLoginStatus();
 </script>
-
 </body>
 </html>
